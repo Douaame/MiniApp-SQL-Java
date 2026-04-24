@@ -82,7 +82,7 @@ public class LoginView {
             String login    = tfLogin.getText();
             String password = tfPassword.getText();
 
-            if (login.equals("se") && password.equals("1234")) {
+            if (login.equals("Aurea_Care") && password.equals("1234")) {
                 new MainView().afficher(stage);
             } else {
                 lblErreur.setText("Login ou mot de passe incorrect !");

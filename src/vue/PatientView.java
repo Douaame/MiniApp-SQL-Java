@@ -1,7 +1,5 @@
 // ============================================================
 // PatientView.java
-// Vue de gestion des patients : affichage, ajout, modification,
-// suppression et recherche via une interface JavaFX.
 // ============================================================
 
 package vue;
@@ -16,29 +14,19 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 public class PatientView {
 
-    // --------------------------------------------------------
-    // Attributs principaux
-    // --------------------------------------------------------
-
-    /** Tableau d'affichage des patients */
     private TableView<Patient> table = new TableView<>();
-
-    /** Objet d'accès aux données (DAO) pour les opérations en base */
     private PatientDAO dao = new PatientDAO();
 
-
-    // ============================================================
-    // MÉTHODE PRINCIPALE : afficher()
-    // ============================================================
     public void afficher(Stage stage) {
 
         // --------------------------------------------------------
-        // 1. CONFIGURATION DES COLONNES DU TABLEAU
+        // 1. COLONNES DU TABLEAU
         // --------------------------------------------------------
         TableColumn<Patient, Integer> colNum = new TableColumn<>("N°");
         colNum.setCellValueFactory(new PropertyValueFactory<>("numPatient"));
@@ -69,13 +57,19 @@ public class PatientView {
         table.setMinHeight(300);
 
         // --------------------------------------------------------
-        // 2. CHARGEMENT INITIAL DES DONNÉES
+        // 2. CHARGEMENT INITIAL
         // --------------------------------------------------------
         chargerPatients();
 
         // --------------------------------------------------------
-        // 3. TITRE DE LA PAGE
+        // 3. TITRE AVEC ICÔNE
         // --------------------------------------------------------
+        ImageView icone = new ImageView(
+            new Image(getClass().getResourceAsStream("/images/patients.png"))
+        );
+        icone.setFitWidth(28);
+        icone.setFitHeight(28);
+
         Label titrePage = new Label("Gestion des Patients");
         titrePage.setStyle(
             "-fx-font-size: 20px;"        +
@@ -83,12 +77,13 @@ public class PatientView {
             "-fx-text-fill: #2e7d32;"      +
             "-fx-font-family: 'Segoe UI';"
         );
-        HBox headerBox = new HBox(titrePage);
+
+        HBox headerBox = new HBox(10, icone, titrePage);
         headerBox.setAlignment(Pos.CENTER_LEFT);
         headerBox.setPadding(new Insets(10, 20, 0, 20));
 
         // --------------------------------------------------------
-        // 4. CRÉATION DES BOUTONS D'ACTION
+        // 4. BOUTONS D'ACTION
         // --------------------------------------------------------
         Button btnAjouter   = styliserBouton("Ajouter",   "#66bb6a");
         Button btnModifier  = styliserBouton("Modifier",  "#ffb74d");
@@ -96,11 +91,10 @@ public class PatientView {
         Button btnRetour    = styliserBouton("Retour",    "#90a4ae");
 
         // --------------------------------------------------------
-        // 5. ACTION : AJOUTER UN PATIENT
+        // 5. ACTION : AJOUTER
         // --------------------------------------------------------
         btnAjouter.setOnAction(e -> {
             Stage stageAjouter = new Stage();
-
             GridPane grid = new GridPane();
             grid.setHgap(10);
             grid.setVgap(10);
@@ -119,157 +113,134 @@ public class PatientView {
             grid.add(new Label("Téléphone :"),       0, 3); grid.add(tfTel,     1, 3);
             grid.add(new Label("Adresse :"),         0, 4); grid.add(tfAdresse, 1, 4);
 
-            // Bouton Valider stylisé
             Button btnValider = styliserBouton("Valider", "#66bb6a");
             grid.add(btnValider, 1, 5);
 
-            // Action du bouton Valider
             btnValider.setOnAction(ev -> {
                 dao.ajouterPatient(
-                    tfNom.getText(),
-                    tfPrenom.getText(),
-                    tfDate.getText(),
-                    tfTel.getText(),
-                    tfAdresse.getText()
+                    tfNom.getText(), tfPrenom.getText(),
+                    tfDate.getText(), tfTel.getText(), tfAdresse.getText()
                 );
                 chargerPatients();
+                AlertUtil.info("Patient ajouté avec succès !");
                 stageAjouter.close();
             });
 
-            // Touche ENTER pour valider
             grid.setOnKeyPressed(ev -> {
                 if (ev.getCode() == javafx.scene.input.KeyCode.ENTER)
                     btnValider.fire();
             });
 
-            // Application du thème sur le popup
             Scene sceneAjouter = new Scene(grid, 350, 270);
             appliquerThemePopup(stageAjouter, sceneAjouter, grid);
-
             stageAjouter.setTitle("Ajouter un Patient");
             stageAjouter.setScene(sceneAjouter);
             stageAjouter.show();
         });
 
         // --------------------------------------------------------
-        // 6. ACTION : SUPPRIMER UN PATIENT
+        // 6. ACTION : SUPPRIMER
         // --------------------------------------------------------
         btnSupprimer.setOnAction(e -> {
-            Patient patientSelectionne = table.getSelectionModel().getSelectedItem();
+            Patient p = table.getSelectionModel().getSelectedItem();
 
-            if (patientSelectionne == null) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Attention");
-                alert.setContentText("Veuillez sélectionner un patient !");
-                alert.showAndWait();
+            if (p == null) {
+                AlertUtil.attention("Veuillez sélectionner un patient !");
                 return;
             }
 
-            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmation.setTitle("Confirmation");
-            confirmation.setContentText("Voulez-vous vraiment supprimer ce patient ?");
-
-            confirmation.showAndWait().ifPresent(response -> {
-                if (response == ButtonType.OK) {
-                    dao.supprimerPatient(patientSelectionne.getNumPatient());
-                    chargerPatients();
-                }
-            });
+            AlertUtil.confirmation("Voulez-vous vraiment supprimer ce patient ?")
+                .ifPresent(response -> {
+                    if (response == ButtonType.OK) {
+                        dao.supprimerPatient(p.getNumPatient());
+                        chargerPatients();
+                        AlertUtil.info("Patient supprimé avec succès !");
+                    }
+                });
         });
 
         // --------------------------------------------------------
-        // 7. ACTION : MODIFIER UN PATIENT
+        // 7. ACTION : MODIFIER
         // --------------------------------------------------------
         btnModifier.setOnAction(e -> {
-            Patient patientSelectionne = table.getSelectionModel().getSelectedItem();
+            Patient p = table.getSelectionModel().getSelectedItem();
 
-            if (patientSelectionne == null) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Attention");
-                alert.setContentText("Veuillez sélectionner un patient !");
-                alert.showAndWait();
+            if (p == null) {
+                AlertUtil.attention("Veuillez sélectionner un patient !");
                 return;
             }
 
             Stage stageModifier = new Stage();
-
             GridPane grid = new GridPane();
             grid.setHgap(10);
             grid.setVgap(10);
             grid.setPadding(new Insets(20));
 
-            final TextField tfNom     = new TextField(patientSelectionne.getNom());
-            final TextField tfPrenom  = new TextField(patientSelectionne.getPrenom());
-            final TextField tfTel     = new TextField(patientSelectionne.getTelephone());
-            final TextField tfAdresse = new TextField(patientSelectionne.getAdresse());
+            final TextField tfNom     = new TextField(p.getNom());
+            final TextField tfPrenom  = new TextField(p.getPrenom());
+            final TextField tfTel     = new TextField(p.getTelephone());
+            final TextField tfAdresse = new TextField(p.getAdresse());
 
-            grid.add(new Label("Nom :"),        0, 0); grid.add(tfNom,     1, 0);
-            grid.add(new Label("Prénom :"),      0, 1); grid.add(tfPrenom,  1, 1);
-            grid.add(new Label("Téléphone :"),   0, 2); grid.add(tfTel,     1, 2);
-            grid.add(new Label("Adresse :"),     0, 3); grid.add(tfAdresse, 1, 3);
+            grid.add(new Label("Nom :"),      0, 0); grid.add(tfNom,     1, 0);
+            grid.add(new Label("Prénom :"),    0, 1); grid.add(tfPrenom,  1, 1);
+            grid.add(new Label("Téléphone :"), 0, 2); grid.add(tfTel,     1, 2);
+            grid.add(new Label("Adresse :"),   0, 3); grid.add(tfAdresse, 1, 3);
 
-            // Bouton Valider stylisé
             Button btnValider = styliserBouton("Valider", "#66bb6a");
             grid.add(btnValider, 1, 4);
 
             btnValider.setOnAction(ev -> {
                 dao.modifierPatient(
-                    patientSelectionne.getNumPatient(),
-                    tfNom.getText(),
-                    tfPrenom.getText(),
-                    tfTel.getText(),
-                    tfAdresse.getText()
+                    p.getNumPatient(),
+                    tfNom.getText(), tfPrenom.getText(),
+                    tfTel.getText(), tfAdresse.getText()
                 );
                 chargerPatients();
+                AlertUtil.info("Patient modifié avec succès !");
                 stageModifier.close();
             });
 
-            // Touche ENTER pour valider
             grid.setOnKeyPressed(ev -> {
                 if (ev.getCode() == javafx.scene.input.KeyCode.ENTER)
                     btnValider.fire();
             });
 
-            // Application du thème sur le popup
             Scene sceneModifier = new Scene(grid, 350, 240);
             appliquerThemePopup(stageModifier, sceneModifier, grid);
-
             stageModifier.setTitle("Modifier un Patient");
             stageModifier.setScene(sceneModifier);
             stageModifier.show();
         });
 
         // --------------------------------------------------------
-        // 8. ACTION : RETOUR AU MENU PRINCIPAL
+        // 8. RETOUR
         // --------------------------------------------------------
         btnRetour.setOnAction(e -> new MainView().afficher(stage));
 
         // --------------------------------------------------------
-        // 9. BARRE DE RECHERCHE EN TEMPS RÉEL
+        // 9. RECHERCHE EN TEMPS RÉEL
         // --------------------------------------------------------
         TextField txtRecherche = new TextField();
         txtRecherche.setPromptText("Rechercher par nom ou téléphone...");
-
-        txtRecherche.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.isEmpty()) {
+        txtRecherche.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.isEmpty()) {
                 chargerPatients();
             } else {
-                ObservableList<Patient> listeFiltree = FXCollections.observableArrayList(
-                    dao.rechercherPatient(newValue)
-                );
-                table.setItems(listeFiltree);
+                table.setItems(FXCollections.observableArrayList(
+                    dao.rechercherPatient(newVal)
+                ));
             }
         });
 
         // --------------------------------------------------------
-        // 10. ASSEMBLAGE DE LA MISE EN PAGE
+        // 10. ASSEMBLAGE
         // --------------------------------------------------------
         HBox top = new HBox(10, txtRecherche);
         top.setPadding(new Insets(10));
 
         VBox center = new VBox(10, headerBox, top, table);
         center.setPadding(new Insets(10, 20, 10, 20));
-        VBox.setVgrow(table, javafx.scene.layout.Priority.ALWAYS);
+        VBox.setVgrow(table, Priority.ALWAYS);
 
         HBox boutons = new HBox(10, btnAjouter, btnModifier, btnSupprimer, btnRetour);
         boutons.setPadding(new Insets(10));
@@ -279,63 +250,29 @@ public class PatientView {
         root.setBottom(boutons);
         root.setStyle("-fx-background-color: #f0f4ff;");
 
-        // --------------------------------------------------------
-        // 11. CONFIGURATION ET AFFICHAGE DE LA FENÊTRE
-        // --------------------------------------------------------
         Scene scene = new Scene(root, 750, 520);
         scene.getStylesheets().add(
             getClass().getResource("/images/style.css").toExternalForm()
         );
-
         stage.setTitle("Gestion des Patients");
         stage.setScene(scene);
         stage.show();
     }
 
-
-    // ============================================================
-    // MÉTHODES UTILITAIRES PRIVÉES
-    // ============================================================
-
-    /**
-     * Charge la liste complète des patients et met à jour le tableau.
-     */
     private void chargerPatients() {
-        ObservableList<Patient> liste = FXCollections.observableArrayList(
-            dao.afficherPatients()
-        );
-        table.setItems(liste);
+        table.setItems(FXCollections.observableArrayList(dao.afficherPatients()));
     }
 
-    /**
-     * Applique le thème visuel (fond + CSS + icône) sur une fenêtre pop-up.
-     *
-     * @param stage  La fenêtre pop-up à styliser
-     * @param scene  La scène de la fenêtre
-     * @param grid   Le GridPane racine du formulaire
-     */
     private void appliquerThemePopup(Stage stage, Scene scene, GridPane grid) {
-        // Fond vert clair cohérent avec les autres vues
         grid.setStyle("-fx-background-color: #f0fff4;");
-
-        // Chargement du CSS global
         scene.getStylesheets().add(
             getClass().getResource("/images/style.css").toExternalForm()
         );
-
-        // Icône identique à la fenêtre principale
         stage.getIcons().add(
             new Image(getClass().getResourceAsStream("/images/Icon.png"))
         );
     }
 
-    /**
-     * Crée et stylise un bouton avec une couleur de fond personnalisée.
-     *
-     * @param texte   Libellé affiché sur le bouton
-     * @param couleur Code couleur hexadécimal (ex : "#66bb6a")
-     * @return        Le bouton stylisé prêt à l'emploi
-     */
     private Button styliserBouton(String texte, String couleur) {
         Button btn = new Button(texte);
         btn.setStyle(
