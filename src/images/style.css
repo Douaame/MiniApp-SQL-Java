@@ -1,0 +1,265 @@
+/* ============================================================
+   style.css
+   Feuille de style globale du Cabinet Médical.
+   Appliquée à toutes les vues JavaFX via scene.getStylesheets()
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   1. FOND GÉNÉRAL ET POLICE PAR DÉFAUT
+   ------------------------------------------------------------ */
+.root {
+    -fx-background-color: #f0fff4;
+    -fx-font-family: 'Segoe UI';
+    -fx-font-size: 13px;
+}
+
+
+/* ------------------------------------------------------------
+   2. TABLEAU (TableView)
+   ------------------------------------------------------------ */
+
+/* Conteneur principal du tableau */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #b2dfdb;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 6, 0, 0, 2);
+}
+
+/* En-têtes des colonnes */
+.table-view .column-header {
+    -fx-background-color: #a5d6a7;
+    -fx-text-fill: #1b5e20;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-padding: 8 10;
+}
+
+/* Coin supérieur droit de l'en-tête (zone vide à droite des colonnes) */
+.table-view .column-header-background .filler {
+    -fx-background-color: #a5d6a7;
+}
+
+/* Rayures alternées pour faciliter la lecture */
+.table-row-cell:even {
+    -fx-background-color: #f1f8f1;
+}
+.table-row-cell:odd {
+    -fx-background-color: white;
+}
+
+/* Ligne survolée */
+.table-row-cell:hover {
+    -fx-background-color: #c8e6c9;
+    -fx-cursor: hand;
+}
+
+/* Ligne sélectionnée */
+.table-row-cell:selected {
+    -fx-background-color: #66bb6a;
+    -fx-text-fill: white;
+}
+
+/* Cellule sélectionnée — évite le retour au blanc sur le texte */
+.table-row-cell:selected .text {
+    -fx-fill: white;
+}
+
+/* Supprime le contour de focus bleu par défaut de JavaFX */
+.table-view:focused {
+    -fx-border-color: #b2dfdb;
+}
+
+/* Message affiché quand le tableau est vide */
+.table-view .placeholder .label {
+    -fx-text-fill: #90a4ae;
+    -fx-font-style: italic;
+    -fx-font-size: 13px;
+}
+
+
+/* ------------------------------------------------------------
+   3. BOUTONS
+   ------------------------------------------------------------ */
+
+/* Style de base commun à tous les boutons */
+.button {
+    -fx-background-radius: 8;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-transition: -fx-opacity 0.2s;
+}
+
+/* Effet au survol : légère transparence */
+.button:hover {
+    -fx-opacity: 0.88;
+}
+
+/* Effet au clic : enfoncement visuel */
+.button:pressed {
+    -fx-opacity: 0.72;
+    -fx-translate-y: 1;
+}
+
+
+/* ------------------------------------------------------------
+   4. CHAMPS DE TEXTE ET MOTS DE PASSE
+   ------------------------------------------------------------ */
+
+.text-field,
+.password-field {
+    -fx-background-radius: 6;
+    -fx-border-color: #a5d6a7;
+    -fx-border-radius: 6;
+    -fx-padding: 7 10;
+    -fx-background-color: white;
+}
+
+/* Bordure verte plus soutenue quand le champ est actif */
+.text-field:focused,
+.password-field:focused {
+    -fx-border-color: #66bb6a;
+    -fx-border-width: 1.5;
+    -fx-effect: dropshadow(gaussian, rgba(102,187,106,0.25), 4, 0, 0, 0);
+}
+
+/* Texte indicatif (prompt) en gris clair */
+.text-field .prompt-text,
+.password-field .prompt-text {
+    -fx-fill: #b0bec5;
+    -fx-font-style: italic;
+}
+
+
+/* ------------------------------------------------------------
+   5. COMBOBOX ET DATEPICKER
+   ------------------------------------------------------------ */
+
+.combo-box,
+.date-picker {
+    -fx-background-radius: 6;
+    -fx-border-color: #a5d6a7;
+    -fx-border-radius: 6;
+    -fx-background-color: white;
+}
+
+.combo-box:focused,
+.date-picker:focused {
+    -fx-border-color: #66bb6a;
+    -fx-border-width: 1.5;
+}
+
+/* Liste déroulante du ComboBox */
+.combo-box .list-cell {
+    -fx-padding: 5 10;
+}
+.combo-box .list-cell:hover {
+    -fx-background-color: #e8f5e9;
+}
+
+
+/* ------------------------------------------------------------
+   6. LABELS
+   ------------------------------------------------------------ */
+
+/* Label titre de page (classe personnalisée) */
+.label-titre {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2e7d32;
+}
+
+/* Label sous-titre (classe personnalisée) */
+.label-sous-titre {
+    -fx-font-size: 13px;
+    -fx-text-fill: #66bb6a;
+}
+
+/* Label d'erreur (classe personnalisée) */
+.label-erreur {
+    -fx-text-fill: #ef5350;
+    -fx-font-size: 12px;
+    -fx-font-style: italic;
+}
+
+
+/* ------------------------------------------------------------
+   7. BOÎTES DE DIALOGUE (Alert)
+   ------------------------------------------------------------ */
+
+/* En-tête de la boîte de dialogue */
+.dialog-pane .header-panel {
+    -fx-background-color: #e8f5e9;
+}
+
+/* Boutons dans les boîtes de dialogue */
+.dialog-pane .button {
+    -fx-background-color: #66bb6a;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+}
+.dialog-pane .button:hover {
+    -fx-opacity: 0.88;
+}
+
+
+/* ------------------------------------------------------------
+   8. SCROLLBAR (barres de défilement)
+   ------------------------------------------------------------ */
+
+/* Piste de la scrollbar */
+.scroll-bar .track {
+    -fx-background-color: #f1f8f1;
+    -fx-background-radius: 4;
+}
+
+/* Curseur de la scrollbar */
+.scroll-bar .thumb {
+    -fx-background-color: #a5d6a7;
+    -fx-background-radius: 4;
+}
+.scroll-bar .thumb:hover {
+    -fx-background-color: #66bb6a;
+}
+
+/* Boutons fléchés de la scrollbar — masqués pour un look épuré */
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-opacity: 0;
+    -fx-padding: 0;
+}
+/* ------------------------------------------------------------
+   DatePicker — icône calendrier dans le thème vert
+   ------------------------------------------------------------ */
+.date-picker .arrow-button {
+    -fx-background-color: #a5d6a7;
+    -fx-background-radius: 0 6 6 0;
+}
+
+.date-picker .arrow-button:hover {
+    -fx-background-color: #66bb6a;
+}
+
+.date-picker .arrow-button .arrow {
+    -fx-background-color: white;
+}
+
+/* En-tête du calendrier popup (mois/année) */
+.date-picker-popup .month-year-pane {
+    -fx-background-color: #a5d6a7;
+}
+
+/* Jour sélectionné */
+.date-picker-popup .day-cell:selected {
+    -fx-background-color: #66bb6a;
+    -fx-text-fill: white;
+}
+
+/* Jour survolé */
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: #c8e6c9;
+}
