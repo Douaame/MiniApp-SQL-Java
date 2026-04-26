@@ -160,4 +160,3 @@ Il nous a permis de pratiquer et de renforcer nos compétences en :
 
 Ce projet est réalisé à des fins pédagogiques dans le cadre du module **Base de Données 1** à l'**USTHB**.
 Vous pouvez librement réutiliser ou adapter le code pour l’apprentissage.
->>>>>>> 8e7bc0f (Correct capitalization of teacher's name)
